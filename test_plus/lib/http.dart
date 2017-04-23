@@ -11,7 +11,7 @@ doTest(TetSocketBuilder builder) async {
     http.HttpClient client = new http.HttpClient(builder);
     await client.connect("httpbin.org", 80);
     http.HttpClientResponse postResult = await client.put("/put", conv.UTF8.encode(conv.JSON.encode({"message": "hello!!"})), header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -22,7 +22,7 @@ doTest(TetSocketBuilder builder) async {
     http.HttpClient client = new http.HttpClient(builder);
     await client.connect("httpbin.org", 80);
     http.HttpClientResponse postResult = await client.patch("/patch", conv.UTF8.encode(conv.JSON.encode({"message": "hello!!"})), header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -33,7 +33,7 @@ doTest(TetSocketBuilder builder) async {
     http.HttpClient client = new http.HttpClient(builder);
     await client.connect("httpbin.org", 80);
     http.HttpClientResponse postResult = await client.post("/post", conv.UTF8.encode(conv.JSON.encode({"message": "hello!!"})), header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -45,7 +45,7 @@ doTest(TetSocketBuilder builder) async {
     http.HttpClient client = new http.HttpClient(builder);
     await client.connect("httpbin.org", 80);
     http.HttpClientResponse postResult = await client.get("/get", header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -57,7 +57,7 @@ doTest(TetSocketBuilder builder) async {
     http.HttpClient client = new http.HttpClient(builder);
     await client.connect("httpbin.org", 80);
     http.HttpClientResponse postResult = await client.delete("/delete", header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -69,7 +69,7 @@ doTest(TetSocketBuilder builder) async {
     http.HttpClient client = new http.HttpClient(builder);
     await client.connect("httpbin.org", 80);
     http.HttpClientResponse postResult = await client.head("/get");//, header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.headerField}");
+    print("## ${postResult.info.headerField}");
     print("## ${await postResult.body.getString()}");
     //Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     //test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -81,7 +81,7 @@ doTest(TetSocketBuilder builder) async {
     http.HttpClient client = new http.HttpClient(builder);
     await client.connect("httpbin.org", 80);
     http.HttpClientResponse postResult = await client.put("/put", conv.UTF8.encode(conv.JSON.encode({"message": "hello!!"})), header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -93,7 +93,7 @@ doTest(TetSocketBuilder builder) async {
   test.test("helper get", () async {
     http.HttpClientHelper client = new http.HttpClientHelper(builder);
     http.HttpClientResponse postResult = await client.get("httpbin.org", 80,"/get",header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -104,7 +104,7 @@ doTest(TetSocketBuilder builder) async {
   test.test("helper get relative-redirect 3", () async {
     http.HttpClientHelper client = new http.HttpClientHelper(builder);
     http.HttpClientResponse postResult = await client.get("httpbin.org", 80,"/relative-redirect/3",header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -115,7 +115,7 @@ doTest(TetSocketBuilder builder) async {
     http.HttpClientHelper client = new http.HttpClientHelper(builder);
     http.HttpClientResponse postResult =
     await client.get("httpbin.org", 80,"/absolute-redirect/3?asdf=aas",header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -128,7 +128,7 @@ doTest(TetSocketBuilder builder) async {
     await client.post("httpbin.org", 80, "/post",//"/absolute-redirect/3?asdf=aas",
     conv.UTF8.encode(conv.JSON.encode({"message": "hello!!"})),
     header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
     Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
     test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);
@@ -139,7 +139,7 @@ doTest(TetSocketBuilder builder) async {
     http.HttpClient client = new http.HttpClient(builder);
     await client.connect("httpbin.org", 443, useSecure: true);
     http.HttpClientResponse postResult = await client.get("/get", header: {"nono": "nano", "Content-Type": "application/json"});
-    print("## ${postResult.message.contentLength}");
+    print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
 //    Map<String, Object> ret = conv.JSON.decode(await postResult.body.getString());
 //    test.expect("application/json", (ret["headers"] as Map)["Content-Type"]);

@@ -1,7 +1,7 @@
 part of hetimanet_http;
 
 class HttpClientResponse {
-  HttpClientResponseInfo message;
+  HttpClientResponseInfo info;
   TetReader body;
 }
 
@@ -60,10 +60,6 @@ class HttpClient {
      return base("HEAD", path, null, header:header, isLoadBody:false);
   }
 
-
-  //
-  // mpost for upnp protocol
-  //
   Future<HttpClientResponse> mpost(String path, List<int> body, {Map<String, String> header}) async {
     return base("M-POST", path, body, header:header);
   }
@@ -102,7 +98,7 @@ class HttpClient {
     EasyParser parser = new EasyParser(socket.buffer);
     HttpClientResponseInfo message = await HetiHttpResponse.decodeHttpMessage(parser);
     HttpClientResponse result = new HttpClientResponse();
-    result.message = message;
+    result.info = message;
     if(isLoadBody == false) {
       result.body = new TetReaderAdapter(socket.buffer, message.index);
       result.body.immutable = true;
@@ -113,8 +109,8 @@ class HttpClient {
 
     if (transferEncodingField == null || transferEncodingField.fieldValue != "chunked") {
       result.body = new TetReaderAdapter(socket.buffer, message.index);
-      if (result.message.contentLength > 0) {
-        await result.body.getBytes(0, result.message.contentLength);
+      if (result.info.contentLength > 0) {
+        await result.body.getBytes(0, result.info.contentLength);
         result.body.immutable = true;
       } else {
         result.body.immutable = true;

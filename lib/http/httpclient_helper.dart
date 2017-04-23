@@ -81,8 +81,8 @@ class HttpClientHelper {
       isLoadBody:isLoadBody);
     client.close();
     //
-    if (redirectStatusCode.contains(res.message.line.statusCode)) {
-      HttpResponseHeaderField locationField = res.message.find("Location");
+    if (redirectStatusCode.contains(res.info.line.statusCode)) {
+      HttpResponseHeaderField locationField = res.info.find("Location");
       HttpUrl hurl = HttpUrlDecoder.decodeUrl(locationField.fieldValue, "http://${address}:${port}");
       int optionIndex = pathAndOption.indexOf("?");
       String option = "";
