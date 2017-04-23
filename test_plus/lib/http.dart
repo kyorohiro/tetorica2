@@ -91,7 +91,7 @@ doTest(TetSocketBuilder builder) async {
   ///redirect-to?url=foo
   ///
   test.test("helper get", () async {
-    http.HttpClientHelper client = new http.HttpClientHelper(builder);
+    http.HttpClientPlus client = new http.HttpClientPlus(builder);
     http.HttpClientResponse postResult = await client.get("httpbin.org", 80,"/get",header: {"nono": "nano", "Content-Type": "application/json"});
     print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
@@ -102,7 +102,7 @@ doTest(TetSocketBuilder builder) async {
   ///redirect-to?url=foo
   ///
   test.test("helper get relative-redirect 3", () async {
-    http.HttpClientHelper client = new http.HttpClientHelper(builder);
+    http.HttpClientPlus client = new http.HttpClientPlus(builder);
     http.HttpClientResponse postResult = await client.get("httpbin.org", 80,"/relative-redirect/3",header: {"nono": "nano", "Content-Type": "application/json"});
     print("## ${postResult.info.contentLength}");
     print("## ${await postResult.body.getString()}");
@@ -112,7 +112,7 @@ doTest(TetSocketBuilder builder) async {
   });
 
   test.test("helper get absolute-redirect 3", () async {
-    http.HttpClientHelper client = new http.HttpClientHelper(builder);
+    http.HttpClientPlus client = new http.HttpClientPlus(builder);
     http.HttpClientResponse postResult =
     await client.get("httpbin.org", 80,"/absolute-redirect/3?asdf=aas",header: {"nono": "nano", "Content-Type": "application/json"});
     print("## ${postResult.info.contentLength}");
@@ -123,7 +123,7 @@ doTest(TetSocketBuilder builder) async {
   });
 
   test.test("helper post", () async {
-    http.HttpClientHelper client = new http.HttpClientHelper(builder);
+    http.HttpClientPlus client = new http.HttpClientPlus(builder);
     http.HttpClientResponse postResult =
     await client.post("httpbin.org", 80, "/post",//"/absolute-redirect/3?asdf=aas",
     conv.UTF8.encode(conv.JSON.encode({"message": "hello!!"})),

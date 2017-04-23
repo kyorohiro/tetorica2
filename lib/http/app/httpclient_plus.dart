@@ -1,8 +1,8 @@
 part of hetimanet_http;
 
-class HttpClientHelper {
+class HttpClientPlus {
   TetSocketBuilder socketBuilder;
-  HttpClientHelper(this.socketBuilder){}
+  HttpClientPlus(this.socketBuilder){}
   Future<HttpClientResponse> get(String address, int port, String pathAndOption,
     {List<int> redirectStatusCode: const [301, 302, 303, 304, 305, 307, 308],
        Map<String, String> header, int redirect: 5,

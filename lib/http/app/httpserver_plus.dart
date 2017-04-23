@@ -4,7 +4,7 @@ class HetiHttpStartServerResult {
 
 }
 
-class HetiHttpServerHelper {
+class HetiHttpServerPlus {
   String localIP = "0.0.0.0";
   int basePort = 18085;
   int _localPort = 18085;
@@ -19,7 +19,7 @@ class HetiHttpServerHelper {
   StreamController<HetiHttpServerPlusResponseItem> _onResponse = new StreamController();
   Stream<HetiHttpServerPlusResponseItem> get onResponse => _onResponse.stream;
 
-  HetiHttpServerHelper(TetSocketBuilder socketBuilder) {
+  HetiHttpServerPlus(TetSocketBuilder socketBuilder) {
     _socketBuilder = socketBuilder;
   }
 
