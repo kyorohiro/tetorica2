@@ -1,0 +1,16 @@
+name: tetorica
+version: 0.0.1
+description:
+author: kyorohiro
+#homepage: https://www.example.com
+
+environment:
+  sdk: '>=1.0.0 <2.0.0'
+
+dependencies:
+  xml: any
+  bignum: any
+  crypto: any
+
+dev_dependencies:
+  test: any
