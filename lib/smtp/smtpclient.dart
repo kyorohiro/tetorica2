@@ -62,11 +62,14 @@ class SmtpClient {
   Future readLine() async {
     int b = await this.parser.readByte();
     ArrayBuilder builder = new ArrayBuilder();
-    if(b == 10) {
-      this.parser.buffer.clearInnerBuffer(this.parser.index);
-    } else {
-      builder.appendByte(b);
-    }
+    do {
+      if (b == 10) {
+        this.parser.buffer.clearInnerBuffer(this.parser.index);
+        break;
+      } else {
+        builder.appendByte(b);
+      }
+    } while(true);
     return builder.toList();
   }
 
