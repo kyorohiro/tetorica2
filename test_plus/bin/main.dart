@@ -12,6 +12,19 @@ main() async {
   await cl.sendHello("example.com");
   List<int> ret = await cl.readLine();
   print(conv.UTF8.decode(ret));
+
+  await cl.sendMailFrom("test@example.com");
+  ret = await cl.readLine();
+  print(conv.UTF8.decode(ret));
+
+  await cl.sendRcptTo("root@mail.kyorohiro.info");
+  ret = await cl.readLine();
+  print(conv.UTF8.decode(ret));
+
+  await cl.sendData(conv.UTF8.encode("Subject: test\r\n\r\ntesttest\r\n"));
+  ret = await cl.readLine();
+  print(conv.UTF8.decode(ret));
+
 }
 /*
 main() async {
