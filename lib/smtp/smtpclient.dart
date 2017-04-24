@@ -31,6 +31,9 @@ class SmtpClient {
     //return new HttpClientConnectResult();
   }
 
+  Future close() {
+    socket.close();
+  }
   Future sendHello(String domain) async {
     return await this.socket.send(convert.ASCII.encode("HELO ${domain}\r\n"));
   }

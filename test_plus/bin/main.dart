@@ -21,10 +21,10 @@ main() async {
   ret = await cl.readLine();
   print(conv.UTF8.decode(ret));
 
-  await cl.sendData(conv.UTF8.encode("Subject: test\r\n\r\ntesttest\r\n"));
+  await cl.sendData(conv.UTF8.encode("Subject: test\r\nFrom:test@example.com\r\n\r\ntesttest\r\n"));
   ret = await cl.readLine();
   print(conv.UTF8.decode(ret));
-
+  cl.close();
 }
 /*
 main() async {
