@@ -3,6 +3,17 @@ import 'package:tetorica/net.dart' as tet;
 import 'dart:convert' as conv;
 import 'dart:async';
 
+import 'package:tetorica/smtp.dart' as tsm;
+
+main() async {
+  tet.TetSocketBuilder builder = new tio.TetSocketBuilderDartIO(verbose: true);
+  tsm.SmtpClient cl = new tsm.SmtpClient(builder);
+  await cl.connect("mail.kyorohiro.info",25);
+  await cl.sendHello("example.com");
+  List<int> ret = await cl.readLine();
+  print(conv.UTF8.decode(ret));
+}
+/*
 main() async {
   tet.TetSocketBuilder builder = new tio.TetSocketBuilderDartIO();
   tet.TetSocket socket = builder.createSecureClient();
@@ -14,3 +25,4 @@ main() async {
   await new Future.delayed(new Duration(seconds: 5));
   print(conv.UTF8.decode(socket.buffer.toUint8List()));
 }
+*/
