@@ -60,9 +60,9 @@ class SmtpClient {
   }
 
   Future readLine() async {
-    int b = await this.parser.readByte();
     ArrayBuilder builder = new ArrayBuilder();
     do {
+      int b = await this.parser.readByte();
       if (b == 10) {
         this.parser.buffer.clearInnerBuffer(this.parser.index);
         break;
