@@ -9,4 +9,7 @@ import 'dart:math' as math show Random;
 import 'net/tmp/rfctable.dart';
 
 part 'smtp/smtpclient.dart';
+part 'smtp/smtpserver.dart';
+part 'smtp/smtpmessage.dart';
+
 //part 'http/oauthclient.dart';

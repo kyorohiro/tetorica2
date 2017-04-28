@@ -87,15 +87,36 @@ class EasyParser {
     return true;
   }
 
-  Future<String> nextString(String value) async {
+  Future<String> nextString(String value,{bool checkUpperLowerCase:false}) async {
     List<int> encoded = convert.UTF8.encode(value);
     int i = await _buffer.getIndex(index, encoded.length);
     if (i + encoded.length > _buffer.currentSize) {
       throw (logon == false ? myException : new Exception());
     }
-    for(int j=0;j<encoded.length;j++) {
-      if(_buffer[j+i] != encoded[j]){
-        throw (logon == false ? myException : new Exception());
+    if(checkUpperLowerCase) {
+      for(int j=0;j<encoded.length;j++) {
+        if(_buffer[j+i] != encoded[j]){
+          throw (logon == false ? myException : new Exception());
+        }
+      }
+    } else {
+      for (int j = 0; j < encoded.length; j++) {
+        var v = encoded[j];
+        if (65 <= v && v <= 90) {
+          if (_buffer[j + i] != encoded[j] && _buffer[j + i] != encoded[j]+32) {
+            throw (logon == false ? myException : new Exception());
+          }
+        }
+        else if (97 <= v && v <= 122) {
+          if (_buffer[j + i] != encoded[j] && _buffer[j + i] != encoded[j]-32) {
+            throw (logon == false ? myException : new Exception());
+          }
+        }
+        else {
+          if(_buffer[j+i] != encoded[j]){
+            throw (logon == false ? myException : new Exception());
+          }
+        }
       }
     }
     index +=encoded.length;
@@ -241,7 +262,7 @@ class EasyParserIncludeMatcher extends EasyParserMatcher {
 class EasyParserStringMatcher extends EasyParserMatcher {
   List<int> include = null;
   int index = 0;
-  EasyParserIncludeMatcher(String v) {
+  EasyParserStringMatcher(String v) {
     include = convert.UTF8.encode(v);
   }
 
