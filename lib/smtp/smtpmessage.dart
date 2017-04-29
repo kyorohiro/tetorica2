@@ -196,8 +196,29 @@ class SmtpMessage {
   }
 
   static Future<String> decodeExceptCRLF(EasyParser parser) async {
-    parser.nextBytePatternByUnmatch(new EasyParserStringMatcher("\r\n"));
-    return parser.nextString("\r\n");
+    return convert.UTF8.decode(
+        await parser.nextBytePatternByUnmatch(new EasyParserStringMatcher("\r\n")),
+        allowMalformed: true
+    );
   }
 
+  static Future<List<int>> decodeExceptDot(EasyParser parser) async {
+    return parser.nextBytePatternByUnmatch(new EasyParserStringMatcher("\r\n."));
+  }
+
+  static Stream<List<int>> decodeExceptDotStream(EasyParser parser) {
+    StreamController<List<int>> controller = new StreamController<List<int>>();
+    new Future(() async{
+      while(true) {
+        try {
+          parser.nextString("\r\n.");
+          controller.close();
+          break;
+        } catch(e){
+        }
+        controller.add([parser.nextBuffer(1)]);
+      }
+    });
+    return controller.stream;
+  }
 }

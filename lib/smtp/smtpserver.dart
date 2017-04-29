@@ -32,7 +32,7 @@ class SmtpServer {
       SmtpServer server = new SmtpServer._internal(serverSocket);
       completer.complete(server);
       serverSocket.onAccept().listen((TetSocket socket){
-        server._controllerOnNewRequest.add(new SmtpRequest());
+        server._controllerOnNewRequest.add(new SmtpSession(socket));
 //        HetiHttpResponse.decodeRequestMessage(parser).then((HetiHttpRequestMessageWithoutBody body){
 //        });
       });
@@ -42,17 +42,30 @@ class SmtpServer {
     return completer.future;
   }
 
-  Stream<SmtpRequest> onNewRequest() {
+  Stream<SmtpSession> onNewRequest() {
     return _controllerOnNewRequest.stream;
   }
 }
 
 
-class SmtpRequest
+class SmtpSession
 {
   TetSocket socket;
-  next() async {
-
+  EasyParser parser;
+  SmtpSession(this.socket) {
+    this.parser = new EasyParser(socket.buffer);
   }
-//  HetiHttpRequestMessageWithoutBody info;
+
+  Future<SmtpMessage>next() async {
+    return SmtpMessage.decode(parser);
+  }
+
+  Stream<List<int>> load() {
+   return SmtpMessage.decodeExceptDotStream(parser);
+  }
+
+  Future send(int code, String message,{withCRLF:true}){
+    socket.send(convert.UTF8.encode("${code} $message ${(withCRLF?'\r\n':'')}"));
+  }
+  //  HetiHttpRequestMessageWithoutBody info;
 }
