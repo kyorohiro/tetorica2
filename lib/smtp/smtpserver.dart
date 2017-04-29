@@ -32,7 +32,7 @@ class SmtpServer {
       SmtpServer server = new SmtpServer._internal(serverSocket);
       completer.complete(server);
       serverSocket.onAccept().listen((TetSocket socket){
-        EasyParser parser = new EasyParser(socket.buffer);
+        server._controllerOnNewRequest.add(new SmtpRequest());
 //        HetiHttpResponse.decodeRequestMessage(parser).then((HetiHttpRequestMessageWithoutBody body){
 //        });
       });
@@ -47,8 +47,12 @@ class SmtpServer {
   }
 }
 
+
 class SmtpRequest
 {
   TetSocket socket;
+  next() async {
+
+  }
 //  HetiHttpRequestMessageWithoutBody info;
 }

@@ -1,109 +1,194 @@
 part of tet_smtp;
 
 
+enum SmtpMessageType {
+  helo,
+  mail,
+  rcpt,
+  data,
+  rset,
+  send,
+  soml,
+  saml,
+  vrfy,
+  expn,
+  help,
+  noop,
+  quit,
+  turn
+}
+
+typedef decodeFunc (EasyParser p);
+
 class SmtpMessage {
+  SmtpMessageType type;
+  String value;
+
+  static List<decodeFunc> decodeFuncs =[
+    SmtpMessage.decodeHello,
+    SmtpMessage.decodeMail,
+    SmtpMessage.decodeRcpt,
+    SmtpMessage.decodeData,
+    SmtpMessage.decodeRset,
+    SmtpMessage.decodeSend,
+    SmtpMessage.decodeSoml,
+    SmtpMessage.decodeSaml,
+    SmtpMessage.decodeVref,
+    SmtpMessage.decodeExpn,
+    SmtpMessage.decodeHelp,
+    SmtpMessage.decodeNoop,
+    SmtpMessage.decodeTurn,
+  ];
+
+  static Future<SmtpMessage> decode(EasyParser parser) async {
+    for (decodeFunc f in decodeFuncs) {
+      try {
+        return f(parser);
+      } catch (e) {}
+    }
+    throw "";
+  }
+
   //   HELO <SP> <domain> <CRLF>
-  static Future decodeHello(EasyParser parser) async {
+  static Future<SmtpMessage> decodeHello(EasyParser parser) async {
     await parser.nextString("HELO ", checkUpperLowerCase:true);
-    String domain = await decodeDomain(parser);
+    String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.helo
+      ..value = value;
   }
 
   // MAIL <SP> FROM:<reverse-path> <CRLF>
-  static Future decodeMail(EasyParser parser) async {
+  static Future<SmtpMessage> decodeMail(EasyParser parser) async {
     await parser.nextString("MAIL FROM:",checkUpperLowerCase:true);
     String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.mail
+      ..value = value;
   }
 
   // RCPT <SP> TO:<forward-path> <CRLF>
-  static Future decodeRcpt(EasyParser parser) async {
+  static Future<SmtpMessage> decodeRcpt(EasyParser parser) async {
     await parser.nextString("MAIL TO:",checkUpperLowerCase:true);
     String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.rcpt
+      ..value = value;
   }
 
   // DATA <CRLF>
-  static Future decodeData(EasyParser parser) async {
+  static Future<SmtpMessage> decodeData(EasyParser parser) async {
     await parser.nextString("DATA",checkUpperLowerCase:true);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.data
+      ..value = "";
   }
 
   // RSET <CRLF>
-  static Future decodeRSET(EasyParser parser) async {
+  static Future<SmtpMessage> decodeRset(EasyParser parser) async {
     await parser.nextString("RSET",checkUpperLowerCase:true);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.rset
+      ..value = "";
   }
 
   // SEND <SP> FROM:<reverse-path> <CRLF>
-  static Future decodeSend(EasyParser parser) async {
+  static Future<SmtpMessage> decodeSend(EasyParser parser) async {
     await parser.nextString("SEND FROM:",checkUpperLowerCase:true);
     String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.send
+      ..value = value;
   }
 
   //  SOML <SP> FROM:<reverse-path> <CRLF>
-  static Future decodeSOML(EasyParser parser) async {
+  static Future<SmtpMessage> decodeSoml(EasyParser parser) async {
     await parser.nextString("SOML FROM:",checkUpperLowerCase:true);
     String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.soml
+      ..value = value;
   }
 
   // SAML <SP> FROM:<reverse-path> <CRLF>
-  static Future decodeSAML(EasyParser parser) async {
+  static Future<SmtpMessage> decodeSaml(EasyParser parser) async {
     await parser.nextString("SAML FROM:",checkUpperLowerCase:true);
     String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.saml
+      ..value = value;
   }
-  
+
   // VRFY <SP> <string> <CRLF>
-  static Future decodeVRFY(EasyParser parser) async {
+  static Future<SmtpMessage> decodeVref(EasyParser parser) async {
     await parser.nextString("VRFY FROM:",checkUpperLowerCase:true);
     String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.vrfy
+      ..value = value;
   }
 
+
   // EXPN <SP> <string> <CRLF>
-  static Future decodeEXPN(EasyParser parser) async {
+  static Future<SmtpMessage> decodeExpn(EasyParser parser) async {
     await parser.nextString("EXPN ",checkUpperLowerCase:true);
     String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.expn
+      ..value = value;
   }
 
+
   // HELP [<SP> <string>] <CRLF>
-  static Future decodeHELP(EasyParser parser) async {
+  static Future<SmtpMessage> decodeHelp(EasyParser parser) async {
     await parser.nextString("HELP",checkUpperLowerCase:true);
+    String value = "";
     try {
       await parser.nextString(" ");
-      String value = await decodeExceptCRLF(parser);
+      value = await decodeExceptCRLF(parser);
     } catch(e) {
     }
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.help
+      ..value = value;
   }
 
   //  NOOP <CRLF>
-  static Future decodeNOOP(EasyParser parser) async {
+  static Future<SmtpMessage> decodeNoop(EasyParser parser) async {
     await parser.nextString("NOOP",checkUpperLowerCase:true);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.noop
+      ..value = "";
   }
+
   // QUIT <CRLF>
-  static Future decodeQUIT(EasyParser parser) async {
+  static Future<SmtpMessage> decodeQUIT(EasyParser parser) async {
     await parser.nextString("QUIT",checkUpperLowerCase:true);
     await decodeCRLF(parser);
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.quit
+      ..value = "";
   }
 
   // TURN <CRLF>
-  static Future decodeTURN(EasyParser parser) async {
-    await parser.nextString("TURN",checkUpperLowerCase:true);
+  static Future<SmtpMessage> decodeTurn(EasyParser parser) async {
+    await parser.nextString("Turn",checkUpperLowerCase:true);
     await decodeCRLF(parser);
-  }
-
-  static Future<String> decodeDomain(EasyParser parser) async {
-
-  }
-
-  static Future<String> decodeSP(EasyParser parser) async {
-    return parser.nextString(" ");
+    return new SmtpMessage()
+      ..type  = SmtpMessageType.turn
+      ..value = "";
   }
 
   static Future<String> decodeCRLF(EasyParser parser) async {
