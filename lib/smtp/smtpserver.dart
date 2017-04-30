@@ -56,16 +56,28 @@ class SmtpSession
     this.parser = new EasyParser(socket.buffer);
   }
 
-  Future<SmtpMessage>next() async {
-    return SmtpMessage.decode(parser);
+  Future<SmtpMessage>next({exceptionIsThrow:true, SmtpMessage defaultValue:null}) async {
+      try {
+        return await SmtpMessage.decode(parser);
+      } catch(e) {
+        if(exceptionIsThrow) {
+          throw e;
+        } else {
+          return defaultValue;
+        }
+      }
   }
 
   Stream<List<int>> load() {
    return SmtpMessage.decodeExceptDotStream(parser);
   }
 
-  Future send(int code, String message,{withCRLF:true}){
-    socket.send(convert.UTF8.encode("${code} $message ${(withCRLF?'\r\n':'')}"));
+  Future send(int code, String message,{withCRLF:true}) async {
+    return await socket.send(convert.UTF8.encode("${code} $message ${(withCRLF?'\r\n':'')}"));
+  }
+
+  Future close() {
+    socket.close();
   }
   //  HetiHttpRequestMessageWithoutBody info;
 }

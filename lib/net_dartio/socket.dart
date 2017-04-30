@@ -15,10 +15,11 @@ class TetSocketDartIo extends TetSocket {
     _isSecure = isSecure;
   }
 
-  TetSocketDartIo.fromSocket(Socket socket, {verbose: false, TetSocketMode mode:TetSocketMode.bufferAndNotify}) {
+  TetSocketDartIo.fromSocket(Socket socket, {verbose: true, TetSocketMode mode:TetSocketMode.bufferAndNotify}) {
     _verbose = verbose;
     _socket = socket;
     _mode = mode;
+    _listen();
   }
 
   bool _nowConnecting = false;
@@ -55,29 +56,32 @@ class TetSocketDartIo extends TetSocket {
         _socket = await Socket.connect(peerAddress, peerPort);
       }
 
-      _socket.listen((List<int> data) {
-        log('<<<lis>>> ');
-        if(_mode != TetSocketMode.notifyOnly) {
-          this.buffer.appendIntList(data, 0, data.length);
-        }
-        if (_mode != TetSocketMode.bufferOnly) {
-          _receiveStream.add(new TetReceiveInfo(data));
-        }
-      }, onDone: () {
-        log('<<<Done>>>');
-        _socket.close();
-        _closeStream.add(new TetCloseInfo());
-      }, onError: (e) {
-        log('<<<Got error>>> $e');
-        _socket.close();
-        _closeStream.add(new TetCloseInfo());
-      });
+      _listen();
       return this;
     } finally {
       _nowConnecting = false;
     }
   }
 
+  void _listen(){
+    _socket.listen((List<int> data) {
+      log('<<<lis>>> ');
+      if(_mode != TetSocketMode.notifyOnly) {
+        this.buffer.appendIntList(data, 0, data.length);
+      }
+      if (_mode != TetSocketMode.bufferOnly) {
+        _receiveStream.add(new TetReceiveInfo(data));
+      }
+    }, onDone: () {
+      log('<<<Done>>>');
+      _socket.close();
+      _closeStream.add(new TetCloseInfo());
+    }, onError: (e) {
+      log('<<<Got error>>> $e');
+      _socket.close();
+      _closeStream.add(new TetCloseInfo());
+    });
+  }
   @override
   Future<TetSocketInfo> getSocketInfo() async {
     TetSocketInfo info = new TetSocketInfo();

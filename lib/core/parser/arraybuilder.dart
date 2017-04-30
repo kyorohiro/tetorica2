@@ -69,6 +69,9 @@ class ArrayBuilder extends TetReader {
     if(out != null && out.length < length) {
       throw new Exception();
     }
+    if(length == 0) {
+      return [];
+    }
     await getIndex(index, length);
     int len = currentSize - index;
     len = (len > length ? length : len);

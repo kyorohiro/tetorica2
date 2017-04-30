@@ -24,6 +24,14 @@ class SmtpMessage {
   SmtpMessageType type;
   String value;
 
+  SmtpMessage(){
+  }
+
+  SmtpMessage.quit() {
+    type = SmtpMessageType.quit;
+    value = "";
+  }
+
   static List<decodeFunc> decodeFuncs =[
     SmtpMessage.decodeHello,
     SmtpMessage.decodeMail,
@@ -43,8 +51,13 @@ class SmtpMessage {
   static Future<SmtpMessage> decode(EasyParser parser) async {
     for (decodeFunc f in decodeFuncs) {
       try {
-        return f(parser);
-      } catch (e) {}
+        parser.push();
+        return await f(parser);
+      } catch (e) {
+        parser.back();
+      }finally {
+        parser.pop();
+      }
     }
     throw "";
   }
@@ -54,6 +67,7 @@ class SmtpMessage {
     await parser.nextString("HELO ", checkUpperLowerCase:true);
     String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
+
     return new SmtpMessage()
       ..type  = SmtpMessageType.helo
       ..value = value;
@@ -71,7 +85,7 @@ class SmtpMessage {
 
   // RCPT <SP> TO:<forward-path> <CRLF>
   static Future<SmtpMessage> decodeRcpt(EasyParser parser) async {
-    await parser.nextString("MAIL TO:",checkUpperLowerCase:true);
+    await parser.nextString("RCPT TO:",checkUpperLowerCase:true);
     String value = await decodeExceptCRLF(parser);
     await decodeCRLF(parser);
     return new SmtpMessage()
@@ -83,6 +97,7 @@ class SmtpMessage {
   static Future<SmtpMessage> decodeData(EasyParser parser) async {
     await parser.nextString("DATA",checkUpperLowerCase:true);
     await decodeCRLF(parser);
+
     return new SmtpMessage()
       ..type  = SmtpMessageType.data
       ..value = "";
@@ -196,10 +211,20 @@ class SmtpMessage {
   }
 
   static Future<String> decodeExceptCRLF(EasyParser parser) async {
-    return convert.UTF8.decode(
-        await parser.nextBytePatternByUnmatch(new EasyParserStringMatcher("\r\n")),
-        allowMalformed: true
-    );
+    int index = parser.index;
+    while(true) {
+      try {
+        parser.push();
+        await parser.nextString("\r\n");
+        parser.back();
+        break;
+      } catch(e){
+      } finally {
+        parser.pop();
+      }
+      await parser.nextBuffer(1);
+    }
+    return convert.UTF8.decode(await parser.buffer.getBytes(index,parser.index-index),allowMalformed: true);
   }
 
   static Future<List<int>> decodeExceptDot(EasyParser parser) async {
@@ -211,12 +236,12 @@ class SmtpMessage {
     new Future(() async{
       while(true) {
         try {
-          parser.nextString("\r\n.");
+          await parser.nextString("\r\n.");
           controller.close();
           break;
         } catch(e){
         }
-        controller.add([parser.nextBuffer(1)]);
+        controller.add([await parser.nextBuffer(1)]);
       }
     });
     return controller.stream;

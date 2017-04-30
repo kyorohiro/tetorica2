@@ -89,11 +89,12 @@ class EasyParser {
 
   Future<String> nextString(String value,{bool checkUpperLowerCase:false}) async {
     List<int> encoded = convert.UTF8.encode(value);
+//    print("${encoded}");
     int i = await _buffer.getIndex(index, encoded.length);
     if (i + encoded.length > _buffer.currentSize) {
       throw (logon == false ? myException : new Exception());
     }
-    if(checkUpperLowerCase) {
+    if(!checkUpperLowerCase) {
       for(int j=0;j<encoded.length;j++) {
         if(_buffer[j+i] != encoded[j]){
           throw (logon == false ? myException : new Exception());
